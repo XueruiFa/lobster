@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import { Provider } from 'react-redux';
 import { lobster } from './reducers';
@@ -27,7 +27,16 @@ if (!isProd) {
   middlewares.push(logger);
 }
 
-const store = createStore(lobster, applyMiddleware(...middlewares));
+const composeEnhancers =
+  typeof window === 'object' &&
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?   
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({    }) : compose;
+
+const enhancer = composeEnhancers(
+  applyMiddleware(...middlewares),
+);
+
+const store = createStore(lobster, enhancer);
 saga.run(urlParse);
 saga.run(rootSaga);
 

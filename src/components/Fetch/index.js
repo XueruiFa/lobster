@@ -1,6 +1,7 @@
 // @flow strict
 
 import React from 'react';
+import { Link } from 'react-router-dom'
 import type { Node as ReactNode } from 'react';
 import * as actions from '../../actions';
 import './style.css';
@@ -37,6 +38,16 @@ export class Fetch extends React.PureComponent<Props> {
   render() {
     return (
       <div>
+        <Link
+          to={{
+            pathname: '/test',
+            data: this.props.lines
+          }}
+        >
+          <button type="button">
+              Click me to get to tracker component!
+          </button>
+        </Link>
         <Bookmarks />
         <div className="main">
           <Toolbar />
