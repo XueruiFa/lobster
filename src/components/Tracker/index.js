@@ -50,7 +50,7 @@ class Tracker extends React.Component<Props, State> {
         return;
       }
 
-      const memberData = this.parseLogLine(port, line.text);
+      const memberData = this.parseLogLine(port, line.text, lineNum);
       if (memberData) {
         if (!this.memberDataMap.get(port)) {
           this.memberDataMap.set(port, new Map());
@@ -75,11 +75,6 @@ class Tracker extends React.Component<Props, State> {
     // Last data for the node.
     const currNodeData = this.lastMemberDataMap.get(port) || {};
 
-    // Config-related.
-    // const config = currNodeData.rsConfig;
-    // const configId = config._id;
-    // const currConfigMembers = this.lastConfigMap.get(configId) || new Set();
-
     switch (logLineID) {
       case 4615611:
         // Node starting up.
@@ -101,31 +96,30 @@ class Tracker extends React.Component<Props, State> {
         // Node is using new config.
         return { ...currNodeData, rsConfig: attr.config };
       case 21393:
+      case 21394:
         // Node found itself in new config.
         // Add the member's port into the current config members. Should be a no-op
         // if it is already in the set.
-        // currConfigMembers.add(port);
 
-        // if (!this.configMap.get(configId)) {
-        //   this.configMap.set(configId, new Map());
-        // }
-        // this.configMap.get(configId).set(lineNum, currConfigMembers);
-        // this.lastConfigMap.set(configId, currConfigMembers);
+        const config = currNodeData.rsConfig;
+        const configId = config._id;
+        const currConfigMembers = new Set(this.lastConfigMap.get(configId));
+
+        if (logLineID === 21393) { // Node found itself in new config.
+            // Add the member's port into the current config members. Should be a no-op
+            // if it is already in the set.
+          currConfigMembers.add(port);
+        } else { // Node could not find itself in new config.
+          currConfigMembers.delete(port);
+        }
+
+        if (!this.configMap.get(configId)) {
+          this.configMap.set(configId, new Map());
+        }
+
+        this.configMap.get(configId).set(lineNum, currConfigMembers);
+        this.lastConfigMap.set(configId, currConfigMembers);
         return;
-
-      case 21394:
-        //  Node could not find itself in new config.
-        // Add the member's port into the current config members. Should be a no-op
-        // if it is already in the set.
-        // currConfigMembers.add(port);
-
-        // if (!this.configMap.get(configId)) {
-        //   this.configMap.set(configId, new Map());
-        // }
-        // this.configMap.get(configId).set(lineNum, currConfigMembers);
-        // this.lastConfigMap.set(configId, currConfigMembers);
-        return;
-
       default:
         return;
     }
