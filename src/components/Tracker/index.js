@@ -37,6 +37,7 @@ class Tracker extends React.Component<Props, State> {
     };
     // this.props.loadLogByIdentity(logIdentity);
     this.parseLogs();
+
     console.log(this.configMap);
     console.log(this.memberDataMap);
   }
@@ -70,7 +71,7 @@ class Tracker extends React.Component<Props, State> {
     if (!logLineID || isNaN(logLineID)) {
       return;
     }
-    console.log(lineNum + ', ' +  logLineID);
+
     const attr = obj.attr;
     // Last data for the node.
     const currNodeData = this.lastMemberDataMap.get(port) || {};
@@ -130,6 +131,30 @@ class Tracker extends React.Component<Props, State> {
         return;
     }
   };
+
+  filterData = (targetLineNum, map) => {
+    const filteredMap = new Map();
+    for (const [ port, dataMap ] of map) {
+      filteredMap.set(port, new Map());
+      for (const [ lineNum, memberData ] of dataMap) {
+        if (lineNum > targetLineNum) {
+          break;
+        }
+
+        filteredMap.get(port).set(lineNum, memberData);
+      }
+    }
+
+    return filteredMap;
+  }
+
+  filterMemberData = targetLineNum => {
+    return this.filterData(targetLineNum, this.memberDataMap);
+  }
+
+  filterConfigData = targetLineNum => {
+    return this.filterData(targetLineNum, this.configMap);
+  }
 
   generateDiagram = lineNum => {
     return (<div>{lineNum}</div>);
