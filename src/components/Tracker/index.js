@@ -1,9 +1,9 @@
 // @flow strict
 
 import React, { Fragment } from 'react';
-import { connect } from 'react-redux';
-import * as actions from '../../actions';
-import * as selectors from '../../selectors';
+// import { connect } from 'react-redux';
+// import * as actions from '../../actions';
+// import * as selectors from '../../selectors';
 
 import type { Dispatch } from 'redux';
 import type { ReduxState, LogIdentity, Line, TrackerData, NodeState } from '../../models';
@@ -79,12 +79,10 @@ class Tracker extends React.Component<Props, State> {
         return { ...currNodeData, state: attr.newState };
       case 21799:
         // Sync source candidate chosen.
-        console.log(attr);
         const syncSourcePort = attr.syncSource.split(':')[1];
         return { ...currNodeData, syncSource: syncSourcePort };
       case 21106:
         // Resetting sync source to empty.
-        console.log(attr);
         return { ...currNodeData, syncSource: '' };
       default:
         return;
@@ -95,7 +93,7 @@ class Tracker extends React.Component<Props, State> {
     return (<div>{lineNum}</div>);
   }
 
-  componentDidUpdate(prevProps: Prop, prevState: State) {
+  componentDidUpdate() {
     // Adding this in to prevent some redness.
     // TODO: Remove/replace this.
     this.generateDiagram(this.state.currLineNum);
