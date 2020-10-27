@@ -313,4 +313,5 @@ export type NodeState =
     pid: string,
     syncSource: string,
     rsConfig: object,
+    granularity: number,
   }>;
