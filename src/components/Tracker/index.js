@@ -21,10 +21,14 @@ type State = {
 };
 
 class Tracker extends React.Component<Props, State> {
-  trackerMap: Map<String, Map<Number, TrackerData>> = new Map();
+  // Map of config ID fields to (line number, list of members) pairs.
+  configMap: Map<String, Map<Number, Set>> = new Map();
+  lastConfigMap: Map<String, Set> = new Map();
+
+  memberDataMap: Map<String, Map<Number, MemberData>> = new Map();
   // Keep track of the last log data so that we can continue propagating fields that weren't
   // changed.
-  currMap: Map<String, TrackerData> = new Map();
+  lastMemberDataMap: Map<String, MemberData> = new Map();
 
   constructor(props) {
     super(props);
@@ -33,30 +37,32 @@ class Tracker extends React.Component<Props, State> {
     };
     // this.props.loadLogByIdentity(logIdentity);
     this.parseLogs();
-    console.log(this.trackerMap);
+    console.log(this.configMap);
+    console.log(this.memberDataMap);
   }
 
   parseLogs = () => {
     const { data } = this.props.location;
     return data.forEach(line => {
       const port = line.port;
+      const lineNum = line.lineNumber;
       if (!port) {
         return;
       }
 
-      const trackerData = this.parseLogLine(port, line.text);
-      if (trackerData) {
-        if (!this.trackerMap.get(port)) {
-          this.trackerMap.set(port, new Map());
+      const memberData = this.parseLogLine(port, line.text);
+      if (memberData) {
+        if (!this.memberDataMap.get(port)) {
+          this.memberDataMap.set(port, new Map());
         }
 
-        this.trackerMap.get(port).set(line.lineNumber, trackerData);
-        this.currMap.set(port, trackerData);
+        this.memberDataMap.get(port).set(lineNum, memberData);
+        this.lastMemberDataMap.set(port, memberData);
       }
     });
   };
 
-  parseLogLine = (port, lineText) => {
+  parseLogLine = (port, lineText, lineNum) => {
     const start = lineText.indexOf('{');
     const obj = JSON.parse(lineText.slice(start));
 
@@ -66,11 +72,18 @@ class Tracker extends React.Component<Props, State> {
     }
 
     const attr = obj.attr;
-    const currNodeData = this.currMap.get(port) || {};
+    // Last data for the node.
+    const currNodeData = this.lastMemberDataMap.get(port) || {};
+
+    // Config-related.
+    // const config = currNodeData.rsConfig;
+    // const configId = config._id;
+    // const currConfigMembers = this.lastConfigMap.get(configId) || new Set();
+
     switch (logLineID) {
       case 4615611:
         // Node starting up.
-        return { state: 'STARTUP', pid: attr.pid, syncSource: '' };
+        return { state: 'STARTUP', pid: attr.pid, syncSource: '', rsConfig: {} };
       case 23138:
         // Node shutting down.
         return { ...currNodeData, state: 'DOWN' };
@@ -84,6 +97,35 @@ class Tracker extends React.Component<Props, State> {
       case 21106:
         // Resetting sync source to empty.
         return { ...currNodeData, syncSource: '' };
+      case 21392:
+        // Node is using new config.
+        return { ...currNodeData, rsConfig: attr.config };
+      case 21393:
+        // Node found itself in new config.
+        // Add the member's port into the current config members. Should be a no-op
+        // if it is already in the set.
+        // currConfigMembers.add(port);
+
+        // if (!this.configMap.get(configId)) {
+        //   this.configMap.set(configId, new Map());
+        // }
+        // this.configMap.get(configId).set(lineNum, currConfigMembers);
+        // this.lastConfigMap.set(configId, currConfigMembers);
+        return;
+
+      case 21394:
+        //  Node could not find itself in new config.
+        // Add the member's port into the current config members. Should be a no-op
+        // if it is already in the set.
+        // currConfigMembers.add(port);
+
+        // if (!this.configMap.get(configId)) {
+        //   this.configMap.set(configId, new Map());
+        // }
+        // this.configMap.get(configId).set(lineNum, currConfigMembers);
+        // this.lastConfigMap.set(configId, currConfigMembers);
+        return;
+
       default:
         return;
     }
@@ -105,7 +147,7 @@ class Tracker extends React.Component<Props, State> {
       <Fragment>
         <div>Node List</div>
         <ul>
-          {this.trackerMap.forEach((map, port) => (
+          {this.memberDataMap.forEach((map, port) => (
             <p>
               Port: {port}
               <ul>

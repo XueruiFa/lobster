@@ -308,9 +308,9 @@ export type NodeState =
   | "ROLLBACK"
   | "REMOVED";
 
-  export type TrackerData = $ReadOnly<{
+  export type MemberData = $ReadOnly<{
     state: NodeState,
     pid: string,
     syncSource: string,
-
+    rsConfig: object,
   }>;
