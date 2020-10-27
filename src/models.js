@@ -314,4 +314,6 @@ export type NodeState =
     syncSource: string,
     rsConfig: object,
     granularity: number,
+    fcv: string,
+    bin: string,
   }>;

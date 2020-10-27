@@ -70,7 +70,7 @@ class Tracker extends React.Component<Props, State> {
     if (!logLineID || isNaN(logLineID)) {
       return;
     }
-
+    console.log(lineNum + ', ' +  logLineID);
     const attr = obj.attr;
     // Last data for the node.
     const currNodeData = this.lastMemberDataMap.get(port) || {};
@@ -82,6 +82,12 @@ class Tracker extends React.Component<Props, State> {
       case 23138:
         // Node shutting down.
         return { ...currNodeData, state: 'DOWN', granularity: 1 };
+      case 23403:
+        // Binary version.
+        return { ...currNodeData, bin: attr.buildInfo.version, granularity: 1 };
+      case 20459:
+        // FCV version.
+        return { ...currNodeData, fcv: attr.newVersion, granularity: 1 };
       case 21358:
         // State transition.
         return { ...currNodeData, state: attr.newState, granularity: 1 };
