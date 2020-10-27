@@ -9,6 +9,7 @@ import type { Dispatch } from 'redux';
 import type { ReduxState, LogIdentity, Line, TrackerData, NodeState } from '../../models';
 import type { ContextRouter } from 'react-router-dom';
 
+import { LineChart, XAxis, YAxis, Tooltip, Brush, Line as PlotLine} from 'recharts';
 
 type Props = {
   // lines: Line[],
@@ -16,8 +17,14 @@ type Props = {
   // loadLogByIdentity: (LogIdentity) => void,
 } & ContextRouter;
 
+type PlotDot = {
+ line: number,
+ state: string,
+};
+
 type State = {
   currLineNum: number,
+  diagramData: PlotDot[] 
 };
 
 class Tracker extends React.Component<Props, State> {
@@ -33,13 +40,30 @@ class Tracker extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
-      currLineNum: 0
+      currLineNum: 0,
+      diagramData: []
     };
     // this.props.loadLogByIdentity(logIdentity);
     this.parseLogs();
+    this.parseDiagramData();
 
     console.log(this.configMap);
     console.log(this.memberDataMap);
+    console.log(this.state.diagramData);
+  }
+
+
+  parseDiagramData = () => {
+      let val = 0;
+      for (let [port, entries] of this.memberDataMap)  {
+          val += 10;
+          for (let [line, value] of entries) {
+              let entry = {}; 
+              entry['line'] = line;
+              entry[port] = val;
+              this.state.diagramData.push(entry);
+          }
+      }
   }
 
   parseLogs = () => {
@@ -187,6 +211,17 @@ class Tracker extends React.Component<Props, State> {
             </p>
           ))}
         </ul>
+      <div>History</div>
+      <div>
+      <LineChart width={800} height={400} data={this.state.diagramData} syncId='anyId'>
+        <PlotLine dataKey="20020" stroke="#8884d8" /> 
+        <PlotLine dataKey="20021" stroke="#888400" /> 
+        <XAxis type="number" label="Line Number" dataKey="line"/>
+        <YAxis/>
+        <Tooltip/>
+        <Brush dataKey="line"/>
+      </LineChart>
+      </div>
       </Fragment>
     );
   }
