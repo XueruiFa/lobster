@@ -1,12 +1,12 @@
 // @flow strict
 
-import React from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 import * as selectors from '../../selectors';
 
 import type { Dispatch } from 'redux';
-import type { ReduxState, LogIdentity, Line } from '../../models';
+import type { ReduxState, LogIdentity, Line, TrackerData, NodeState } from '../../models';
 import type { ContextRouter } from 'react-router-dom';
 
 
@@ -21,7 +21,10 @@ type State = {
 };
 
 class Tracker extends React.Component<Props, State> {
-  eventMap: Map<Number, String> = new Map();
+  trackerMap: Map<String, Map<Number, TrackerData>> = new Map();
+  // Keep track of the last log data so that we can continue propagating fields that weren't
+  // changed.
+  currMap: Map<String, TrackerData> = new Map();
 
   constructor(props) {
     super(props);
@@ -29,23 +32,54 @@ class Tracker extends React.Component<Props, State> {
       currLineNum: 0
     };
     // this.props.loadLogByIdentity(logIdentity);
-    this.parseEvents();
-    console.log(this.eventMap);
+    this.parseLogs();
+    console.log(this.trackerMap);
   }
 
-  parseEvents = () => {
+  parseLogs = () => {
     const { data } = this.props.location;
     return data.forEach(line => {
-      const event = this.parseEventFromLine(line);
-      if (event) {
-        this.eventMap.set(line.lineNumber, event);
+      const port = line.port;
+      if (!port) {
+        return;
+      }
+
+      const trackerData = this.parseLogLine(port, line.text);
+      if (trackerData) {
+        if (!this.trackerMap.get(port)) {
+          this.trackerMap.set(port, new Map());
+        }
+
+        this.trackerMap.get(port).set(line.lineNumber, trackerData);
+        this.currMap.set(port, trackerData);
       }
     });
   };
 
-  parseEventFromLine = (line: Line) => {
-    const blocks = line.text.split(" ");
-    return "yes";
+  parseLogLine = (port, lineText) => {
+    const start = lineText.indexOf('{');
+    const obj = JSON.parse(lineText.slice(start));
+
+    const logLineID = obj.id;
+    if (!logLineID || isNaN(logLineID)) {
+      return;
+    }
+
+    const attr = obj.attr;
+    const currNodeData = this.currMap.get(port) || {};
+    switch (logLineID) {
+      case 4615611:
+        // Node starting up.
+        return {state: "STARTUP", pid: attr.pid};
+      case 23138:
+        // Node shutting down.
+        return {...currNodeData, state: "STOPPED"};
+      case 21358:
+        // State transition.
+        return {...currNodeData, state: attr.newState};
+      default:
+        return;
+    }
   };
 
   generateDiagram = lineNum => {
@@ -59,13 +93,27 @@ class Tracker extends React.Component<Props, State> {
   }
 
   render() {
-    const { data } = this.props.location;
-    console.log(data);
-
     return (
-      <div>
-        <div>Main page</div>
-      </div>
+      // WIP
+      <Fragment>
+        <div>Node List</div>
+        <ul>
+          {this.trackerMap.forEach((map, port) => (
+            <p>
+              Port: {port}
+              <ul>
+                {map.forEach((node, lineNumber) => (
+                    <Fragment>
+                      <p> Line number: {lineNumber} </p>
+                      <p> State: {node.state} </p>
+                      <p> PID: {node.pid} </p>
+                    </Fragment>
+                ))}
+              </ul>
+            </p>
+          ))}
+        </ul>
+      </Fragment>
     );
   }
 }

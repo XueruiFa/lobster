@@ -295,3 +295,20 @@ export type ReduxState = $Exact<$ReadOnly<{
     log: Log,
     logviewer: LogViewerState
   }>>;
+
+export type NodeState =
+  | "PRIMARY"
+  | "SECONDARY"
+  | "RECOVERING"
+  | "STARTUP_2"
+  | "UNKNOWN"
+  | "ARBITER"
+  | "DOWN"
+  | "ROLLBACK"
+  | "REMOVED";
+
+  export type TrackerData = $ReadOnly<{
+    state: NodeState,
+    pid: string,
+
+  }>;
