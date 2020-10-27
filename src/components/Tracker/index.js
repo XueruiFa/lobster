@@ -70,13 +70,22 @@ class Tracker extends React.Component<Props, State> {
     switch (logLineID) {
       case 4615611:
         // Node starting up.
-        return {state: "STARTUP", pid: attr.pid};
+        return { state: 'STARTUP', pid: attr.pid, syncSource: '' };
       case 23138:
         // Node shutting down.
-        return {...currNodeData, state: "STOPPED"};
+        return { ...currNodeData, state: 'DOWN' };
       case 21358:
         // State transition.
-        return {...currNodeData, state: attr.newState};
+        return { ...currNodeData, state: attr.newState };
+      case 21799:
+        // Sync source candidate chosen.
+        console.log(attr);
+        const syncSourcePort = attr.syncSource.split(':')[1];
+        return { ...currNodeData, syncSource: syncSourcePort };
+      case 21106:
+        // Resetting sync source to empty.
+        console.log(attr);
+        return { ...currNodeData, syncSource: '' };
       default:
         return;
     }

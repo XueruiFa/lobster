@@ -300,6 +300,7 @@ export type NodeState =
   | "PRIMARY"
   | "SECONDARY"
   | "RECOVERING"
+  | "STARTUP"
   | "STARTUP_2"
   | "UNKNOWN"
   | "ARBITER"
@@ -310,5 +311,6 @@ export type NodeState =
   export type TrackerData = $ReadOnly<{
     state: NodeState,
     pid: string,
+    syncSource: string,
 
   }>;
