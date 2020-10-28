@@ -37,22 +37,12 @@ export class Fetch extends React.PureComponent<Props> {
     return (<LogView />);
   }
 
-  showGraphs(): ?ReactNode {
-    if (!this.props.lines) {
-      return <div />;
-    }
-    return (<Tracker />);
-  }
-
   render() {
     return (
       <div>
         <Bookmarks />
         <div className="main">
           <Toolbar />
-          <div className="graph-list">
-            {this.showGraphs()}
-          </div>
           <div className="log-list">
             {this.showLines()}
           </div>

@@ -212,14 +212,33 @@ class Tracker extends React.Component<Props, State> {
 
   render() {
     const { selectedLineNum } = this.props;
+    const filteredMap = this.filterMemberData(selectedLineNum);
+    const keys = Array.from(filteredMap.keys());
+
     return (
       <div>
-      <Fragment>
         <NodeTable
           name={`Node State At Line ${selectedLineNum}`}
           data={this.getLastData(selectedLineNum)}
+          style={{width: "50%", height: "1500px"}}
         />
-      </Fragment>
+        {keys.map((port) => {
+          const dataMap = filteredMap.get(port);
+          const data = [];
+          for (const [ lineNum, memberData ] of dataMap) {
+            data.push({ ...memberData, lineNum, port });
+          }
+          return (
+            <div>
+              <NodeTable
+                name={`Node State History for ${port}`}
+                data={data}
+                style={{width: "50%", height: "1500px"}}
+              />
+              <br />
+            </div>
+          );
+        })}
       <div>History</div>
       <div>
       <LineChart width={800} height={400} data={this.state.diagramData} syncId='anyId'>

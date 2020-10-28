@@ -1,11 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 
-type Props = {
-  memberData: Map<String, Map<Number, MemberData>>,
-};
-
-const NodeTable = ({ name, data } : Props) => {
+const NodeTable = ({ name, data }) => {
   const columns = [
     { field: 'lineNum', title: 'Line Num' },
     { field: 'port', title: 'Port' },
@@ -18,7 +14,12 @@ const NodeTable = ({ name, data } : Props) => {
 
   const Table = ({ name, columns, data }) => {
     return (
-      <MaterialTable title={name} data={data} columns={columns} />
+      <MaterialTable
+        title={name}
+        data={data}
+        columns={columns}
+        options={{ search: false, filtering: false }}
+      />
     );
   };
 
