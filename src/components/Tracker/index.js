@@ -60,13 +60,11 @@ class Tracker extends React.Component<Props, State> {
 
 
   parseDiagramData = () => {
-      let val = 0;
       for (let [port, entries] of this.memberDataMap)  {
-          val += 10;
           for (let [line, value] of entries) {
               let entry = {}; 
+              entry[port] = port;
               entry['line'] = line;
-              entry[port] = val;
               this.state.diagramData.push(entry);
           }
       }
@@ -200,6 +198,10 @@ class Tracker extends React.Component<Props, State> {
     return lastData;
   }
 
+  getDiagramData = targetLineNum => {
+     return this.state.diagramData;
+  }
+
   generateDiagram = lineNum => {
     return (<div>{lineNum}</div>);
   }
@@ -248,13 +250,15 @@ class Tracker extends React.Component<Props, State> {
         })}
       <div>History</div>
       <div>
-      <LineChart width={800} height={400} data={this.state.diagramData} syncId='anyId'>
-        <PlotLine dataKey="20020" stroke="#8884d8" /> 
-        <PlotLine dataKey="20021" stroke="#888400" /> 
+      <LineChart width={800} height={400} data={this.getDiagramData(selectedLineNum)}>
+        {keys.map((port) => {
+            return (
+                <PlotLine dataKey={`${port}`} stroke="#8884d8" /> 
+            );
+        })}
         <XAxis type="number" label="Line Number" dataKey="line"/>
-        <YAxis/>
+        <YAxis type="category" label="Node"/>
         <Tooltip/>
-        <Brush dataKey="line"/>
       </LineChart>
       </div>
       </div>
