@@ -363,7 +363,7 @@ class LogView extends React.Component<Props, State> {
       return (
         <div>
           {this.props.showTracker && (
-            <Tracker lines={this.props.lines} />
+            <Tracker lines={this.props.lines} selectedLineNum={this.state.selectStartIndex || 0} />
           )}
           <ReactList
             ref={this.setLogListRef}

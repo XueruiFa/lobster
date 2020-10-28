@@ -8,11 +8,15 @@ import React, { Fragment } from 'react';
 import type { Dispatch } from 'redux';
 import type { ReduxState, LogIdentity, Line, TrackerData, NodeState } from '../../models';
 import type { ContextRouter } from 'react-router-dom';
+import NodeTable from './NodeTable';
+
+import './style.css';
 
 import { LineChart, XAxis, YAxis, Tooltip, Brush, Line as PlotLine} from 'recharts';
 
 type Props = {
   lines: Line[],
+  selectedLineNum: Number,
   // logIdentity: LogIdentity,
   // loadLogByIdentity: (LogIdentity) => void,
 } & ContextRouter;
@@ -24,7 +28,7 @@ type PlotDot = {
 
 type State = {
   currLineNum: number,
-  diagramData: PlotDot[] 
+  diagramData: PlotDot[],
 };
 
 class Tracker extends React.Component<Props, State> {
@@ -109,7 +113,8 @@ class Tracker extends React.Component<Props, State> {
         return { ...currNodeData, state: 'DOWN', granularity: 1 };
       case 23403:
         // Binary version.
-        return { ...currNodeData, bin: attr.buildInfo.version, granularity: 1 };
+        const shortBin = attr.buildInfo.version.split("-")[0];
+        return { ...currNodeData, bin: shortBin, granularity: 1 };
       case 20459:
         // FCV version.
         return { ...currNodeData, fcv: attr.newVersion, granularity: 1 };
@@ -180,6 +185,19 @@ class Tracker extends React.Component<Props, State> {
     return this.filterData(targetLineNum, this.configMap);
   }
 
+  getLastData = targetLineNum => {
+    const lastData = [];
+    const filteredData = this.filterMemberData(targetLineNum);
+    for (const [ port, dataMap ] of filteredData) {
+      let lastObj = {};
+      for (const [ lineNum, memberData ] of dataMap) {
+        lastObj = { ...memberData, port, lineNum };
+      }
+      lastData.push(lastObj);
+    }
+    return lastData;
+  }
+
   generateDiagram = lineNum => {
     return (<div>{lineNum}</div>);
   }
@@ -191,26 +209,13 @@ class Tracker extends React.Component<Props, State> {
   }
 
   render() {
+    const { selectedLineNum } = this.props;
     return (
-      // WIP
       <Fragment>
-        <div>Node List</div>
-        <ul>
-          {this.memberDataMap.forEach((map, port) => (
-            <p>
-              Port: {port}
-              <ul>
-                {map.forEach((node, lineNumber) => (
-                    <Fragment>
-                      <p> Line number: {lineNumber} </p>
-                      <p> State: {node.state} </p>
-                      <p> PID: {node.pid} </p>
-                    </Fragment>
-                ))}
-              </ul>
-            </p>
-          ))}
-        </ul>
+        <NodeTable
+          name={`Node State At Line ${selectedLineNum}`}
+          data={this.getLastData(selectedLineNum)}
+        />
       <div>History</div>
       <div>
       <LineChart width={800} height={400} data={this.state.diagramData} syncId='anyId'>
