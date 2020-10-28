@@ -12,7 +12,6 @@ import { Nav, NavItem } from 'react-bootstrap';
 import CacheModal from './CacheModal';
 import LogDrop from '../LogDrop';
 import queryString from '../../thirdparty/query-string';
-import Tracker from '../Tracker';
 
 const logdrop = (props: ContextRouter) => {
   const parsed = queryString.parse(props.location.search === '' ? props.location.hash : props.location.search);
@@ -25,7 +24,6 @@ const logviewer = (props) => (<LogkeeperLogViewer {...props} />);
 const evergreenLogviewer = (props) => (<EvergreenLogViewer {...props} />);
 const about = (props) => (<About {...props} />);
 const notfound = (props) => (<NotFound {...props} />);
-const tracker = (props) => (<Tracker {...props} />);
 
 const Main = () => (
   <main className="lobster">
@@ -36,7 +34,6 @@ const Main = () => (
       <Route exact path="/lobster/evergreen/task/:id/:execution/:type" render={evergreenLogviewer} />
       <Route exact path="/lobster/evergreen/test/:id" render={evergreenLogviewer} />
       <Route exact path="/lobster/evergreen/test/:id/:execution/:type" render={evergreenLogviewer} />
-      <Route exact path="/test" render={tracker} />
       <Route path="/lobster/logdrop" render={logviewer} />
       <Route path="/lobster" render={logdrop} />
       <Route path="*" render={notfound} />

@@ -24,6 +24,7 @@ type Props = {
     toggleExpandableRows: () => void,
     toggleParseResmokeJson: () => void,
     togglePrettyPrint: () => void,
+    toggleTracker: () => void,
   },
   filterActions: {
     removeFilter: (string) => void,
@@ -284,11 +285,27 @@ export class CollapseMenu extends React.PureComponent<Props> {
               </FormGroup>
             </Col>
 
-            <FormGroup>
-              <Col componentClass={ControlLabel} lg={1}>JIRA</Col>
-              <Col lg={1}><textarea readOnly className="unmoving" value={this.props.valueJIRA}></textarea></Col>
-              {showDetailButtons(this.props.logIdentity, this.props.wipeCache)}
-            </FormGroup>
+            <Col lg={3}>
+              <FormGroup>
+                <label className="control-label col-sm-8">Show Tracker</label>
+                <ToggleButtonGroup
+                  className="toggle-tracker"
+                  type="radio"
+                  name="tracker-on-off"
+                  value={this.props.settings.showTracker}
+                  onChange={this.props.toggleSettings.toggleTracker}
+                >
+                  <ToggleButton value={true} bsSize="small" bsStyle="primary">on</ToggleButton>
+                  <ToggleButton value={false} bsSize="small" bsStyle="primary">off</ToggleButton>
+                </ToggleButtonGroup>
+              </FormGroup>
+
+              <FormGroup>
+                <Col componentClass={ControlLabel} lg={1}>JIRA</Col>
+                <Col lg={1}><textarea readOnly className="unmoving" value={this.props.valueJIRA}></textarea></Col>
+                {showDetailButtons(this.props.logIdentity, this.props.wipeCache)}
+              </FormGroup>
+            </Col>
           </Form>
           <Filters
             filters={this.props.filterList}
@@ -344,6 +361,7 @@ function mapDispatchToProps(dispatch: Dispatch<*>, ownProps) {
     toggleExpandableRows: () => dispatch(actions.toggleExpandableRows()),
     toggleParseResmokeJson: () => dispatch(actions.toggleParseResmokeJson()),
     togglePrettyPrint: () => dispatch(actions.togglePrettyPrint()),
+    toggleTracker: () => dispatch(actions.toggleTracker()),
   };
 
   return {

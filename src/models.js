@@ -30,7 +30,8 @@ export type Settings = $ReadOnly<$Exact<{
     filterIntersection: boolean,
     parseResmokeJson: boolean,
     expandableRows: boolean,
-    prettyPrint: boolean
+    prettyPrint: boolean,
+    showTracker: boolean
   }>>;
 
 export type Bookmark = {|

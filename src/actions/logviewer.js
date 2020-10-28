@@ -182,6 +182,10 @@ export function togglePrettyPrint(): ChangeSetting {
   return toggleSetting('pretty-print');
 }
 
+export function toggleTracker(): ChangeSetting {
+  return toggleSetting('tracker');
+}
+
 export function loadInitialFilters(initialFilters: Filter[]): LoadFilters {
   return {
     type: LOGVIEWER_LOAD_FILTERS,

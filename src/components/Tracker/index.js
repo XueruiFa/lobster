@@ -12,7 +12,7 @@ import type { ContextRouter } from 'react-router-dom';
 import { LineChart, XAxis, YAxis, Tooltip, Brush, Line as PlotLine} from 'recharts';
 
 type Props = {
-  // lines: Line[],
+  lines: Line[],
   // logIdentity: LogIdentity,
   // loadLogByIdentity: (LogIdentity) => void,
 } & ContextRouter;
@@ -67,7 +67,7 @@ class Tracker extends React.Component<Props, State> {
   }
 
   parseLogs = () => {
-    const { data } = this.props.location;
+    const data = this.props.lines;
     return data.forEach(line => {
       const port = line.port;
       const lineNum = line.lineNumber;
@@ -75,7 +75,7 @@ class Tracker extends React.Component<Props, State> {
         return;
       }
 
-      const memberData = this.parseLogLine(port, line.text, lineNum);
+      const memberData = this.parseLogLine(port, line.originalText, lineNum);
       if (memberData) {
         if (!this.memberDataMap.get(port)) {
           this.memberDataMap.set(port, new Map());
@@ -226,10 +226,6 @@ class Tracker extends React.Component<Props, State> {
     );
   }
 }
-
-// Tracker.defaultProps = {
-//   logIdentity: null,
-// }
 
 // function mapStateToProps(state: ReduxState, ownProps: $Shape<Props>): $Shape<Props> {
 //   console.log(state);

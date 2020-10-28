@@ -11,6 +11,7 @@ import * as selectors from '../../selectors';
 import type {
   ReduxState, ColorMap, SearchResults, HighlightLineData, Bookmark, Line
 } from 'src/models';
+import Tracker from '../Tracker/index';
 
 import './style.css';
 
@@ -33,7 +34,8 @@ type Props = {
   findResults: SearchResults,
   toggleBookmark: (number[]) => void,
   scrollToLine: (number) => void,
-  prettyPrint: boolean
+  prettyPrint: boolean,
+  showTracker: boolean,
 };
 
 type SkipLine = {|
@@ -360,6 +362,9 @@ class LogView extends React.Component<Props, State> {
     if (this.state.lines.length !== 0) {
       return (
         <div>
+          {this.props.showTracker && (
+            <Tracker lines={this.props.lines} />
+          )}
           <ReactList
             ref={this.setLogListRef}
             itemRenderer={this.genList}
@@ -386,6 +391,7 @@ function mapStateToProps(state: ReduxState, ownProps: $Shape<Props>): $Shape<Pro
     wrap: settings.wrap,
     expandableRows: settings.expandableRows,
     prettyPrint: settings.prettyPrint,
+    showTracker: settings.tracker,
     searchTerm: selectors.getLogViewerSearchTerm(state),
     startRange: selectors.getLogViewerSearchStartRange(state),
     endRange: selectors.getLogViewerSearchEndRange(state),
