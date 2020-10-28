@@ -1,9 +1,9 @@
 // @flow strict
 
 import React, { Fragment } from 'react';
-// import { connect } from 'react-redux';
-// import * as actions from '../../actions';
-// import * as selectors from '../../selectors';
+import { connect } from 'react-redux';
+import * as actions from '../../actions';
+import * as selectors from '../../selectors';
 
 import type { Dispatch } from 'redux';
 import type { ReduxState, LogIdentity, Line, TrackerData, NodeState } from '../../models';
@@ -13,7 +13,9 @@ import NodeTable from './NodeTable';
 import './style.css';
 
 import { LineChart, XAxis, YAxis, Tooltip, Brush, Line as PlotLine} from 'recharts';
-
+import {
+  Col
+} from 'react-bootstrap';
 type Props = {
   lines: Line[],
   selectedLineNum: Number,
@@ -227,28 +229,26 @@ class Tracker extends React.Component<Props, State> {
         <Brush dataKey="line"/>
       </LineChart>
       </div>
-      </Fragment>
     );
   }
 }
 
-// function mapStateToProps(state: ReduxState, ownProps: $Shape<Props>): $Shape<Props> {
-//   console.log(state);
-//   const lines = selectors.getFilteredLineData(state);
-//   console.log(lines);
-//   return {
-//     ...ownProps,
-//     lines: lines,
-//   };
-// }
+function mapStateToProps(state: ReduxState, ownProps: $Shape<Props>): $Shape<Props> {
+  console.log("ReduxState");
+  console.log(state);
+  const lines = selectors.getFilteredLineData(state);
+  console.log(lines);
+  return {
+    ...ownProps,
+    lines: lines,
+  };
+}
 
-// function mapDispatchToProps(dispatch: Dispatch<*>, ownProps) {
-//   return {
-//     ...ownProps,
-//     loadLogByIdentity: (identity: LogIdentity) => dispatch(actions.loadLog(identity))
-//   };
-// }
+function mapDispatchToProps(dispatch: Dispatch<*>, ownProps) {
+   return {
+     ...ownProps,
+     loadLogByIdentity: (identity: LogIdentity) => dispatch(actions.loadLog(identity))
+   };
+}
 
-// export default connect(mapStateToProps, mapDispatchToProps)(Tracker);
-
-export default Tracker;
+export default connect(mapStateToProps, mapDispatchToProps)(Tracker);

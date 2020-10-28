@@ -6,6 +6,7 @@ import type { Node as ReactNode } from 'react';
 import * as actions from '../../actions';
 import './style.css';
 import LogView from '../LogView/index';
+import Tracker from '../Tracker/index';
 import Bookmarks from './Bookmarks';
 import { connect } from 'react-redux';
 import Toolbar from './Toolbar';
@@ -14,6 +15,7 @@ import type { Dispatch } from 'redux';
 import type { ReduxState, LogIdentity, Line } from '../../models';
 import type { ContextRouter } from 'react-router-dom';
 
+import { Table } from 'react-bootstrap';
 type Props = {
   lines: Line[],
   logIdentity: ?LogIdentity,
@@ -35,12 +37,22 @@ export class Fetch extends React.PureComponent<Props> {
     return (<LogView />);
   }
 
+  showGraphs(): ?ReactNode {
+    if (!this.props.lines) {
+      return <div />;
+    }
+    return (<Tracker />);
+  }
+
   render() {
     return (
       <div>
         <Bookmarks />
         <div className="main">
           <Toolbar />
+          <div className="graph-list">
+            {this.showGraphs()}
+          </div>
           <div className="log-list">
             {this.showLines()}
           </div>
