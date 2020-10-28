@@ -213,11 +213,13 @@ class Tracker extends React.Component<Props, State> {
   render() {
     const { selectedLineNum } = this.props;
     return (
+      <div>
       <Fragment>
         <NodeTable
           name={`Node State At Line ${selectedLineNum}`}
           data={this.getLastData(selectedLineNum)}
         />
+      </Fragment>
       <div>History</div>
       <div>
       <LineChart width={800} height={400} data={this.state.diagramData} syncId='anyId'>
@@ -228,6 +230,7 @@ class Tracker extends React.Component<Props, State> {
         <Tooltip/>
         <Brush dataKey="line"/>
       </LineChart>
+      </div>
       </div>
     );
   }
