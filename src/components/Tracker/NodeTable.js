@@ -19,6 +19,7 @@ const NodeTable = ({ name, data }) => {
         data={data}
         columns={columns}
         options={{ search: false, filtering: false }}
+        style={{ marginBottom: '10px', alignContent: 'center' }}
       />
     );
   };

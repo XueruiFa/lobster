@@ -112,7 +112,7 @@ class Tracker extends React.Component<Props, State> {
         return { state: 'STARTUP', pid: attr.pid, syncSource: '', rsConfig: {}, granularity: 1 };
       case 23138:
         // Node shutting down.
-        return { ...currNodeData, state: 'DOWN', granularity: 1 };
+        return { ...currNodeData, state: 'DOWN', syncSource: '', granularity: 1 };
       case 23403:
         // Binary version.
         const shortBin = attr.buildInfo.version.split("-")[0];
@@ -216,11 +216,17 @@ class Tracker extends React.Component<Props, State> {
     const keys = Array.from(filteredMap.keys());
 
     return (
-      <div>
+      <div
+        style={{
+          maxWidth: '80%',
+          maxHeight: '1500px',
+          padding: '30px',
+          alignContent: 'center'
+        }}
+      >
         <NodeTable
-          name={`Node State At Line ${selectedLineNum}`}
+          name={`Each Node State By Line ${selectedLineNum}`}
           data={this.getLastData(selectedLineNum)}
-          style={{width: "50%", height: "1500px"}}
         />
         {keys.map((port) => {
           const dataMap = filteredMap.get(port);
