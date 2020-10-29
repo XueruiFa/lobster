@@ -1,6 +1,7 @@
 // @flow strict
 
-import React, { Fragment } from 'react';
+import React, { Fragments } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 import * as selectors from '../../selectors';
@@ -12,10 +13,11 @@ import NodeTable from './NodeTable';
 
 import './style.css';
 
-import { LineChart, XAxis, YAxis, Tooltip, Brush, Line as PlotLine} from 'recharts';
+import { LineChart, Label, ResponsiveContainer, XAxis, YAxis, ReferenceLine, Tooltip, Brush, Line as PlotLine} from 'recharts';
 import {
   Col
 } from 'react-bootstrap';
+
 type Props = {
   lines: Line[],
   selectedLineNum: Number,
@@ -63,8 +65,16 @@ class Tracker extends React.Component<Props, State> {
       for (let [port, entries] of this.memberDataMap)  {
           for (let [line, value] of entries) {
               let entry = {}; 
+              let ylabel = "d" + port.toString();
+              if (value.state === 'PRIMARY' || value.state === 'SECONDARY') {
+                entry[ylabel] = port.toString() + "UP";
+              }
+              else {
+                entry[ylabel] = port.toString() + "DOWN";
+              }
               entry[port] = port;
               entry['line'] = line;
+              entry['state'] = value.state;
               this.state.diagramData.push(entry);
           }
       }
@@ -212,6 +222,7 @@ class Tracker extends React.Component<Props, State> {
     this.generateDiagram(this.state.currLineNum);
   }
 
+
   render() {
     const { selectedLineNum } = this.props;
     const filteredMap = this.filterMemberData(selectedLineNum);
@@ -250,16 +261,41 @@ class Tracker extends React.Component<Props, State> {
         })}
       <div>History</div>
       <div>
-      <LineChart width={800} height={400} data={this.getDiagramData(selectedLineNum)}>
+      <ResponsiveContainer minWidth={800} minHeight={400}>
+      <LineChart 
+        data={this.getDiagramData(selectedLineNum)}
+        margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
         {keys.map((port) => {
+            let ylabel = "d" + port.toString();
             return (
-                <PlotLine dataKey={`${port}`} stroke="#8884d8" /> 
+                <PlotLine 
+                type="stepAfter" 
+                activeDot={{ stroke: "green", strokeWidth: 2, r: 5 }}  
+                strokeWidth="2"
+                dataKey={`${ylabel}`} 
+                stroke="#8884d8" /> 
             );
         })}
-        <XAxis type="number" label="Line Number" dataKey="line"/>
-        <YAxis type="category" label="Node"/>
-        <Tooltip/>
+        <XAxis type="number" dataKey="line">
+            <Label value="Line#" offset={0} position="insideBottomLeft" />
+        </XAxis>
+        <YAxis hide="true" type="category" label="Node"/>
+        <ReferenceLine x={`${selectedLineNum}`} stroke="green" label="Current" />
+        <Tooltip
+            wrapperStyle={{ backgroundColor: "red" }}
+            labelStyle={{ color: "green" }}
+            itemStyle={{ color: "blue" }}
+            formatter={function(value, name, props) {
+              let propsString = JSON.stringify(props);
+              return `[state: ${props.payload.state}]`;
+            }}
+            labelFormatter={function(value) {
+              return `log line: ${value}`;
+            }}
+          />
+        <Brush dataKey="line" data={this.getDiagramData(selectedLineNum)}/>
       </LineChart>
+       </ResponsiveContainer>
       </div>
       </div>
     );
