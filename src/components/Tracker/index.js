@@ -74,8 +74,11 @@ class Tracker extends React.Component<Props, State> {
               }
               entry[port] = port;
               entry['line'] = line;
-              entry['state'] = value.state;
               entry['pid'] = value.pid;
+              entry['state'] = value.state;
+              entry['bin'] = value.bin;
+              entry['fcv'] = value.fcv;
+              entry['syncSource'] - value.syncSource;
               this.state.diagramData.push(entry);
           }
       }
@@ -287,10 +290,13 @@ class Tracker extends React.Component<Props, State> {
             labelStyle={{ color: "green" }}
             itemStyle={{ color: "blue" }}
             formatter={function(value, name, props) {
+              const { state, pid, bin, fcv, syncSource } = props.payload;
               let propsString = JSON.stringify(props);
-              return `[state: ${props.payload.state}
-                       PID: ${props.payload.pid}
-                      ]`;
+              return `[State: ${state}\n
+                       PID: ${pid}\n
+                       Bin Version: ${bin}\n
+                       FCV Version: ${fcv}\n
+                       Sync Source: ${syncSource}]`;
             }}
             labelFormatter={function(value) {
               return `log line: ${value}`;
