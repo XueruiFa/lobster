@@ -75,6 +75,7 @@ class Tracker extends React.Component<Props, State> {
               entry[port] = port;
               entry['line'] = line;
               entry['state'] = value.state;
+              entry['pid'] = value.pid;
               this.state.diagramData.push(entry);
           }
       }
@@ -276,7 +277,7 @@ class Tracker extends React.Component<Props, State> {
                 stroke="#8884d8" /> 
             );
         })}
-        <XAxis type="number" dataKey="line">
+        <XAxis type="category" dataKey="line">
             <Label value="Line#" offset={0} position="insideBottomLeft" />
         </XAxis>
         <YAxis hide="true" type="category" label="Node"/>
@@ -287,13 +288,15 @@ class Tracker extends React.Component<Props, State> {
             itemStyle={{ color: "blue" }}
             formatter={function(value, name, props) {
               let propsString = JSON.stringify(props);
-              return `[state: ${props.payload.state}]`;
+              return `[state: ${props.payload.state}
+                       PID: ${props.payload.pid}
+                      ]`;
             }}
             labelFormatter={function(value) {
               return `log line: ${value}`;
             }}
           />
-        <Brush dataKey="line" data={this.getDiagramData(selectedLineNum)}/>
+        <Brush/>
       </LineChart>
        </ResponsiveContainer>
       </div>
