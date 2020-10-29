@@ -36,6 +36,7 @@ type Props = {
   scrollToLine: (number) => void,
   prettyPrint: boolean,
   showTracker: boolean,
+  detailsOpen: boolean,
 };
 
 type SkipLine = {|
@@ -359,13 +360,14 @@ class LogView extends React.Component<Props, State> {
   }
 
   render() {
-    const graphStyle = this.props.showTracker ? 'graph-list' : '';
+    const tracker = this.props.showTracker && this.props.detailsOpen;
+    const graphStyle = tracker ? 'graph-list' : '';
 
     if (this.state.lines.length !== 0) {
       return (
         <div>
           <div className={graphStyle} >
-            {this.props.showTracker && (
+            {tracker && (
               <Tracker selectedLineNum={this.state.selectStartIndex || 0} />
             )}
           </div>
@@ -406,6 +408,7 @@ function mapStateToProps(state: ReduxState, ownProps: $Shape<Props>): $Shape<Pro
     lines: lines,
     findResults: selectors.getFindResults(state),
     expandableFilterData: [],
+    detailsOpen: selectors.getIsLogViewerSettingsPanel(state),
   };
 }
 

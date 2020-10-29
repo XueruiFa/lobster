@@ -21,6 +21,8 @@ import {
 type Props = {
   lines: Line[],
   selectedLineNum: Number,
+  detailsOpen: Boolean,
+  toggleTracker: () => void,
   // logIdentity: LogIdentity,
   // loadLogByIdentity: (LogIdentity) => void,
 } & ContextRouter;
@@ -228,9 +230,13 @@ class Tracker extends React.Component<Props, State> {
 
 
   render() {
-    const { selectedLineNum } = this.props;
+    const { selectedLineNum, detailsOpen } = this.props;
     const filteredMap = this.filterMemberData(selectedLineNum);
     const keys = Array.from(filteredMap.keys());
+
+    if (!detailsOpen) {
+      return <div></div>;
+    }
 
     return (
       <div
@@ -291,11 +297,6 @@ class Tracker extends React.Component<Props, State> {
             itemStyle={{ color: "blue" }}
             formatter={function(value, name, props) {
               const { state, pid, bin, fcv, syncSource } = props.payload;
-              // return `[State: ${state}\n
-              //          PID: ${pid}\n
-              //          Bin Version: ${bin}\n
-              //          FCV Version: ${fcv}\n
-              //          Sync Source: ${syncSource}]`;
               return (
                 <div>
                   State: {state} <br />
@@ -320,20 +321,20 @@ class Tracker extends React.Component<Props, State> {
 }
 
 function mapStateToProps(state: ReduxState, ownProps: $Shape<Props>): $Shape<Props> {
-  console.log("ReduxState");
   console.log(state);
   const lines = selectors.getFilteredLineData(state);
-  console.log(lines);
   return {
     ...ownProps,
     lines: lines,
+    detailsOpen: selectors.getIsLogViewerSettingsPanel(state),
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch<*>, ownProps) {
    return {
      ...ownProps,
-     loadLogByIdentity: (identity: LogIdentity) => dispatch(actions.loadLog(identity))
+     loadLogByIdentity: (identity: LogIdentity) => dispatch(actions.loadLog(identity)),
+     toggleTracker: () => dispatch(actions.toggleTracker()),
    };
 }
 
