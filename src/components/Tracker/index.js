@@ -78,7 +78,7 @@ class Tracker extends React.Component<Props, State> {
               entry['state'] = value.state;
               entry['bin'] = value.bin;
               entry['fcv'] = value.fcv;
-              entry['syncSource'] - value.syncSource;
+              entry['syncSource'] = value.syncSource;
               this.state.diagramData.push(entry);
           }
       }
@@ -246,7 +246,7 @@ class Tracker extends React.Component<Props, State> {
           data={this.getLastData(selectedLineNum)}
           style={{width: "50%", height: "1500px"}}
         />
-        {keys.map((port) => {
+        {/* {keys.map((port) => {
           const dataMap = filteredMap.get(port);
           const data = [];
           for (const [ lineNum, memberData ] of dataMap) {
@@ -262,7 +262,7 @@ class Tracker extends React.Component<Props, State> {
               <br />
             </div>
           );
-        })}
+        })} */}
       <div>History</div>
       <div>
       <ResponsiveContainer minWidth={800} minHeight={400}>
@@ -291,12 +291,20 @@ class Tracker extends React.Component<Props, State> {
             itemStyle={{ color: "blue" }}
             formatter={function(value, name, props) {
               const { state, pid, bin, fcv, syncSource } = props.payload;
-              let propsString = JSON.stringify(props);
-              return `[State: ${state}\n
-                       PID: ${pid}\n
-                       Bin Version: ${bin}\n
-                       FCV Version: ${fcv}\n
-                       Sync Source: ${syncSource}]`;
+              // return `[State: ${state}\n
+              //          PID: ${pid}\n
+              //          Bin Version: ${bin}\n
+              //          FCV Version: ${fcv}\n
+              //          Sync Source: ${syncSource}]`;
+              return (
+                <div>
+                  State: {state} <br />
+                  PID: {pid} <br />
+                  Bin Version: {bin} <br />
+                  FCV Version: {fcv} <br />
+                  Sync Source: {syncSource}
+                </div>
+              );
             }}
             labelFormatter={function(value) {
               return `log line: ${value}`;
