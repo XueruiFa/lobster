@@ -18,7 +18,7 @@ const NodeTable = ({ name, data }) => {
         title={name}
         data={data}
         columns={columns}
-        options={{ search: false, filtering: false }}
+        options={{ search: false, filtering: false, pageSize: 2 }}
         style={{ marginBottom: '10px', alignContent: 'center' }}
       />
     );
