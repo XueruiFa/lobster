@@ -130,9 +130,9 @@ class Tracker extends React.Component<Props, State> {
       case 21106:
         // Resetting sync source to empty.
         return { ...currNodeData, syncSource: '', granularity: 1 };
-      case 21392:
-        // Node is using new config.
-        return { ...currNodeData, rsConfig: attr.config, granularity: 1 };
+      // case 21392:
+      //   // Node is using new config.
+      //   return { ...currNodeData, rsConfig: attr.config, granularity: 1 };
       case 21393:
       case 21394:
         // Node found itself in new config.
@@ -227,6 +227,7 @@ class Tracker extends React.Component<Props, State> {
         <NodeTable
           name={`Each Node State By Line ${selectedLineNum}`}
           data={this.getLastData(selectedLineNum)}
+          style={{width: "50%", height: "1500px"}}
         />
         {keys.map((port) => {
           const dataMap = filteredMap.get(port);
@@ -237,7 +238,7 @@ class Tracker extends React.Component<Props, State> {
           return (
             <div>
               <NodeTable
-                name={`Node State History for ${port}`}
+                name={`Node History for ${port}`}
                 data={data}
                 style={{width: "50%", height: "1500px"}}
               />
